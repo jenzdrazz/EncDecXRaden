@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Radenn Matcha cih🌿☘️</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #e0e5ec;
+      color: #333;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 500px;
+      background: #e0e5ec;
+      border-radius: 20px;
+      padding: 40px;
+      box-shadow: 9px 9px 16px #b8b9be, -9px -9px 16px #ffffff;
+      transition: all 0.3s ease-in-out;
+      animation: fadeIn 0.5s ease;
+    }
+
+    h1 {
+      text-align: center;
+      font-size: 1.8rem;
+      margin-bottom: 20px;
+      color: #222;
+    }
+
+    select, input, textarea, button {
+      width: 100%;
+      padding: 12px;
+      margin: 10px 0;
+      border-radius: 12px;
+      border: none;
+      font-size: 1rem;
+      background: #e0e5ec;
+      box-shadow: inset 4px 4px 6px #babecc, inset -4px -4px 6px #ffffff;
+      outline: none;
+      transition: 0.2s ease;
+    }
+
+    select:focus, input:focus, textarea:focus {
+      box-shadow: inset 2px 2px 5px #babecc, inset -2px -2px 5px #ffffff;
+    }
+
+    button {
+      background-color: #4f46e5;
+      color: white;
+      font-weight: 600;
+      box-shadow: 4px 4px 8px #babecc, -4px -4px 8px #ffffff;
+      transition: 0.3s ease;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #4338ca;
+    }
+
+    .danger {
+      background-color: #ef4444;
+    }
+
+    .danger:hover {
+      background-color: #b91c1c;
+    }
+
+    .output-label {
+      font-weight: 600;
+      margin-top: 15px;
+      margin-bottom: -5px;
+      color: #555;
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 80px;
+    }
+
+    #output {
+      background-color: #f3f4f6;
+      box-shadow: inset 2px 2px 6px #babecc, inset -2px -2px 6px #ffffff;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Radenn Matcha cih🌿☘️</h1>
+    
+    <select id="method">
+      <option value="rot13">ROT13</option>
+      <option value="hex">Hex Escape</option>
+      <option value="charcode">CharCode</option>
+      <option value="base64">Base64</option>
+    </select>
+    
+    <input type="number" id="times" placeholder="How many times?" min="1" value="5">
+    
+    <textarea id="input" placeholder="Enter your text/code here..."></textarea>
+    
+    <button onclick="obfuscate()">🔒 Obfuscate</button>
+    <button onclick="decode()">🔓 Decode</button>
+    <button onclick="copyOutput()">📋 Copy Output</button>
+    
+    <p class="output-label">Output:</p>
+    <textarea id="output" placeholder="Result will show here..." readonly></textarea>
+    
+    <button onclick="logout()" class="danger">🚪 Logout</button>
+  </div>
+
+  <script>
+    // Proteksi: jika belum login, redirect ke login.html
+    if (!localStorage.getItem('loggedIn')) {
+      window.location.href = 'login.html';
+    }
+
+    function logout() {
+      localStorage.removeItem('loggedIn');
+      window.location.href = 'login.html';
+    }
+
+    function obfuscate() {
+      let input = document.getElementById('input').value;
+      const method = document.getElementById('method').value;
+      const times = parseInt(document.getElementById('times').value) || 1;
+      let output = input;
+
+      try {
+        for (let i = 0; i < times; i++) {
+          switch (method) {
+            case 'base64':
+              output = btoa(unescape(encodeURIComponent(output)));
+              break;
+            case 'hex':
+              output = output.split('').map(c => '\\x' + c.charCodeAt(0).toString(16).padStart(2, '0')).join('');
+              break;
+            case 'charcode':
+              output = output.split('').map(c => c.charCodeAt(0)).join(',');
+              break;
+            case 'rot13':
+              output = output.replace(/[a-zA-Z]/g, c => {
+                const base = c <= 'Z' ? 65 : 97;
+                return String.fromCharCode((c.charCodeAt(0) - base + 13) % 26 + base);
+              });
+              break;
+          }
+        }
+      } catch (e) {
+        output = 'Error obfuscating input: ' + e.message;
+      }
+
+      document.getElementById('output').value = output;
+    }
+
+    function decode() {
+      let input = document.getElementById('input').value;
+      const method = document.getElementById('method').value;
+      const times = parseInt(document.getElementById('times').value) || 1;
+      let output = input;
+
+      try {
+        for (let i = 0; i < times; i++) {
+          switch (method) {
+            case 'base64':
+              output = decodeURIComponent(escape(atob(output)));
+              break;
+            case 'hex':
+              output = decodeURIComponent(output.replace(/\\x/g, '%'));
+              break;
+            case 'charcode':
+              output = String.fromCharCode(...output.split(',').map(n => parseInt(n.trim())));
+              break;
+            case 'rot13':
+              output = output.replace(/[a-zA-Z]/g, c => {
+                const base = c <= 'Z' ? 65 : 97;
+                return String.fromCharCode((c.charCodeAt(0) - base + 13) % 26 + base);
+              });
+              break;
+          }
+        }
+      } catch (e) {
+        output = 'Error decoding input: ' + e.message;
+      }
+
+      document.getElementById('output').value = output;
+    }
+
+    function copyOutput() {
+      const output = document.getElementById('output').value;
+      if (!output) {
+        alert('No output to copy!');
+        return;
+      }
+      navigator.clipboard.writeText(output).then(() => {
+        alert('Output copied to clipboard!');
+      }).catch(() => {
+        // Fallback untuk browser lama
+        const textarea = document.getElementById('output');
+        textarea.select();
+        document.execCommand('copy');
+        alert('Output copied!');
+      });
+    }
+  </script>
+</body>
+  </html>
