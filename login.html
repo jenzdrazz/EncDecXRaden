@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Login - Radenn Matcha</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #e0e5ec;
+      color: #333;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 400px;
+      background: #e0e5ec;
+      border-radius: 20px;
+      padding: 40px;
+      box-shadow: 9px 9px 16px #b8b9be, -9px -9px 16px #ffffff;
+      transition: all 0.3s ease-in-out;
+    }
+
+    h1 {
+      text-align: center;
+      font-size: 1.8rem;
+      margin-bottom: 10px;
+      color: #222;
+    }
+
+    .subtitle {
+      text-align: center;
+      font-size: 0.85rem;
+      color: #666;
+      margin-bottom: 20px;
+    }
+
+    input, button {
+      width: 100%;
+      padding: 12px;
+      margin: 10px 0;
+      border-radius: 12px;
+      border: none;
+      font-size: 1rem;
+      background: #e0e5ec;
+      box-shadow: inset 4px 4px 6px #babecc, inset -4px -4px 6px #ffffff;
+      outline: none;
+      transition: 0.2s ease;
+    }
+
+    input:focus {
+      box-shadow: inset 2px 2px 5px #babecc, inset -2px -2px 5px #ffffff;
+    }
+
+    button {
+      background-color: #4f46e5;
+      color: white;
+      font-weight: 600;
+      box-shadow: 4px 4px 8px #babecc, -4px -4px 8px #ffffff;
+      transition: 0.3s ease;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #4338ca;
+    }
+
+    #msg {
+      text-align: center;
+      font-size: 0.9rem;
+      margin-top: 10px;
+      min-height: 20px;
+    }
+
+    .msg-error {
+      color: red;
+    }
+
+    .msg-success {
+      color: green;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🔐 Private Access</h1>
+    <p class="subtitle">Radenn Matcha cih🌿☘️</p>
+    
+    <input type="text" id="email" placeholder="Username" autocomplete="username">
+    <input type="password" id="password" placeholder="Password" autocomplete="current-password">
+    <button onclick="login()">Login</button>
+    <p id="msg"></p>
+  </div>
+
+  <script>
+    // Daftar user yang diizinkan (hardcoded)
+    const ALLOWED_USERS = {
+      'diyyaaa': 'jendlaaa',
+      'jendlaaa': 'diyyaaa'
+    };
+
+    // Cek jika sudah login, langsung redirect ke halaman utama
+    if (localStorage.getItem('loggedIn')) {
+      const currentUser = localStorage.getItem('loggedIn');
+      // Verifikasi ulang apakah user masih valid
+      if (ALLOWED_USERS[currentUser]) {
+        window.location.href = 'index.html';
+      } else {
+        // Jika user tidak valid, hapus session
+        localStorage.removeItem('loggedIn');
+      }
+    }
+
+    function login() {
+      const username = document.getElementById('email').value.trim().toLowerCase();
+      const password = document.getElementById('password').value;
+      const msg = document.getElementById('msg');
+
+      // Reset pesan
+      msg.className = '';
+      msg.textContent = '';
+
+      // Validasi input kosong
+      if (!username || !password) {
+        msg.className = 'msg-error';
+        msg.textContent = '⚠️ Please fill in all fields.';
+        return;
+      }
+
+      // Cek apakah username ada di daftar dan password cocok
+      if (ALLOWED_USERS[username] && ALLOWED_USERS[username] === password) {
+        // Login berhasil
+        localStorage.setItem('loggedIn', username);
+        msg.className = 'msg-success';
+        msg.textContent = '✅ Login successful! Redirecting...';
+        
+        // Animasi loading sebentar lalu redirect
+        setTimeout(() => {
+          window.location.href = 'index.html';
+        }, 800);
+      } else {
+        // Login gagal
+        msg.className = 'msg-error';
+        msg.textContent = '❌ Invalid username or password.';
+        
+        // Clear password field untuk keamanan
+        document.getElementById('password').value = '';
+        
+        // Shake effect untuk container
+        const container = document.querySelector('.container');
+        container.style.animation = 'shake 0.5s ease';
+        setTimeout(() => {
+          container.style.animation = '';
+        }, 500);
+      }
+    }
+
+    // Enter key untuk submit
+    document.addEventListener('keypress', function(e) {
+      if (e.key === 'Enter') {
+        login();
+      }
+    });
+  </script>
+
+  <style>
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(-10px); }
+      75% { transform: translateX(10px); }
+    }
+  </style>
+</body>
+  </html>
